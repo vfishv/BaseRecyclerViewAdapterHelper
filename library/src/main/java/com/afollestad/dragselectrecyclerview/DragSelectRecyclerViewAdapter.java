@@ -1,8 +1,8 @@
 package com.afollestad.dragselectrecyclerview;
 
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.recyclerview.widget.RecyclerView;
+import android.support.annotation.CallSuper;
+import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
 
