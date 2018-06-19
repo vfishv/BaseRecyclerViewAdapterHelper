@@ -928,21 +928,21 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
      * To bind different types of holder and solve different the bind events
      *
      * @param holder
-     * @param positions
+     * @param position
      * @see #getDefItemViewType(int)
      */
     @Override
-    public void onBindViewHolder(K holder, int positions) {
-        super.onBindViewHolder(holder, positions);
+    public void onBindViewHolder(K holder, int position) {
+        super.onBindViewHolder(holder, position);
         //Add up fetch logic, almost like load more, but simpler.
-        autoUpFetch(positions);
+        autoUpFetch(position);
         //Do not move position, need to change before LoadMoreView binding
-        autoLoadMore(positions);
+        autoLoadMore(position);
         int viewType = holder.getItemViewType();
 
         switch (viewType) {
             case 0:
-                convert(holder, getItem(positions - getHeaderLayoutCount()));
+                convert(holder, getItem(position - getHeaderLayoutCount()));
                 break;
             case LOADING_VIEW:
                 mLoadMoreView.convert(holder);
@@ -954,7 +954,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
             case FOOTER_VIEW:
                 break;
             default:
-                convert(holder, getItem(positions - getHeaderLayoutCount()));
+                convert(holder, getItem(position - getHeaderLayoutCount()));
                 break;
         }
     }
