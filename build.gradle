@@ -12,11 +12,11 @@ buildscript {
 }
 
 allprojects {
-        repositories {
-                jcenter()
-                google()
-                mavenCentral()
-            }
+    repositories {
+        jcenter()
+        google()
+        mavenCentral()
     }
+}
 
 
