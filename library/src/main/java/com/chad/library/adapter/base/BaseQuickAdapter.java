@@ -74,6 +74,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
     private boolean mLoading = false;
     private LoadMoreView mLoadMoreView = new SimpleLoadMoreView();
     private RequestLoadMoreListener mRequestLoadMoreListener;
+    private boolean mEnableLoadMoreEndClick = false;
 
     //Animation
     /**
@@ -196,12 +197,12 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
 
     /**
      * check if full page after {@link #setNewData(List)}, if full, it will enable load more again.
-     *
+     * <p>
      * 不是配置项！！
-     *
+     * <p>
      * 这个方法是用来检查是否满一屏的，所以只推荐在 {@link #setNewData(List)} 之后使用
      * 原理很简单，先关闭 load more，检查完了再决定是否开启
-     *
+     * <p>
      * 不是配置项！！
      *
      * @param recyclerView your recyclerView
@@ -217,7 +218,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
             recyclerView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if ((linearLayoutManager.findLastCompletelyVisibleItemPosition() + 1) != getItemCount()) {
+                    if (isFullScreen(linearLayoutManager)) {
                         setEnableLoadMore(true);
                     }
                 }
@@ -238,6 +239,11 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
         }
     }
 
+    private boolean isFullScreen(LinearLayoutManager llm) {
+        return (llm.findLastCompletelyVisibleItemPosition() + 1) != getItemCount() ||
+                llm.findFirstCompletelyVisibleItemPosition() != 0;
+    }
+
     private int getTheBiggestNumber(int[] numbers) {
         int tmp = -1;
         if (numbers == null || numbers.length == 0) {
@@ -250,12 +256,14 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
         }
         return tmp;
     }
+
     /**
      * up fetch start
      */
     private boolean mUpFetchEnable;
     private boolean mUpFetching;
     private UpFetchListener mUpFetchListener;
+
     public void setUpFetchEnable(boolean upFetch) {
         this.mUpFetchEnable = upFetch;
     }
@@ -293,9 +301,11 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
     public void setUpFetchListener(UpFetchListener upFetchListener) {
         mUpFetchListener = upFetchListener;
     }
+
     public interface UpFetchListener {
         void onUpFetch();
     }
+
     /**
      * up fetch end
      */
@@ -306,7 +316,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
     /**
      * Set custom load more
      *
-     * @param loadingView
+     * @param loadingView 加载视图
      */
     public void setLoadMoreView(LoadMoreView loadingView) {
         this.mLoadMoreView = loadingView;
@@ -328,6 +338,15 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
             return 0;
         }
         return 1;
+    }
+
+    /**
+     * Gets to load more locations
+     *
+     * @return
+     */
+    public int getLoadMoreViewPosition() {
+        return getHeaderLayoutCount() + mData.size() + getFooterLayoutCount();
     }
 
     /**
@@ -359,10 +378,10 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
         mNextLoadEnable = false;
         mLoadMoreView.setLoadMoreEndGone(gone);
         if (gone) {
-            notifyItemRemoved(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());
+            notifyItemRemoved(getLoadMoreViewPosition());
         } else {
             mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_END);
-            notifyItemChanged(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());
+            notifyItemChanged(getLoadMoreViewPosition());
         }
     }
 
@@ -374,8 +393,9 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
             return;
         }
         mLoading = false;
+        mNextLoadEnable = true;
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
-        notifyItemChanged(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());
+        notifyItemChanged(getLoadMoreViewPosition());
     }
 
     /**
@@ -387,7 +407,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
         }
         mLoading = false;
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_FAIL);
-        notifyItemChanged(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());
+        notifyItemChanged(getLoadMoreViewPosition());
     }
 
     /**
@@ -402,12 +422,12 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
 
         if (oldLoadMoreCount == 1) {
             if (newLoadMoreCount == 0) {
-                notifyItemRemoved(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());
+                notifyItemRemoved(getLoadMoreViewPosition());
             }
         } else {
             if (newLoadMoreCount == 1) {
                 mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
-                notifyItemInserted(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());
+                notifyItemInserted(getLoadMoreViewPosition());
             }
         }
     }
@@ -430,7 +450,14 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
         mDuration = duration;
     }
 
-
+    /**
+     * If you have added headeview, the notification view refreshes.
+     * Do not need to care about the number of headview, only need to pass in the position of the final view
+     * @param position
+     */
+    public final void refreshNotifyItemChanged(int position) {
+        notifyItemChanged(position + getHeaderLayoutCount());
+    }
     /**
      * Same as QuickAdapter#QuickAdapter(Context,int) but with
      * some initialization data.
@@ -552,6 +579,21 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
     }
 
     /**
+     * use data to replace all item in mData. this method is different {@link #setNewData(List)},
+     * it doesn't change the mData reference
+     *
+     * @param data data collection
+     */
+    public void replaceData(@NonNull Collection<? extends T> data) {
+        // 不是同一个引用才清空列表
+        if (data != mData) {
+            mData.clear();
+            mData.addAll(data);
+        }
+        notifyDataSetChanged();
+    }
+
+    /**
      * compatible getLoadMoreViewCount and getEmptyViewCount may change
      *
      * @param size Need compatible data size
@@ -566,7 +608,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
     /**
      * Get the data of list
      *
-     * @return
+     * @return 列表数据
      */
     @NonNull
     public List<T> getData() {
@@ -582,7 +624,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
      */
     @Nullable
     public T getItem(@IntRange(from = 0) int position) {
-        if (position < mData.size())
+        if (position >= 0 && position < mData.size())
             return mData.get(position);
         else
             return null;
@@ -742,7 +784,6 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
 
     }
 
-
     private K getLoadingView(ViewGroup parent) {
         View view = getItemView(mLoadMoreView.getLayoutId(), parent);
         K holder = createBaseViewHolder(view);
@@ -750,12 +791,34 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
             @Override
             public void onClick(View v) {
                 if (mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL) {
-                    mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
-                    notifyItemChanged(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());
+                    notifyLoadMoreToLoading();
+                }
+                if (mEnableLoadMoreEndClick && mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_END) {
+                    notifyLoadMoreToLoading();
                 }
             }
         });
         return holder;
+    }
+
+    /**
+     * The notification starts the callback and loads more
+     */
+    public void notifyLoadMoreToLoading() {
+        if (mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_LOADING) {
+            return;
+        }
+        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
+        notifyItemChanged(getLoadMoreViewPosition());
+    }
+
+    /**
+     * Load more without data when settings are clicked loaded
+     *
+     * @param enable
+     */
+    public void enableLoadMoreEndClick(boolean enable) {
+        mEnableLoadMoreEndClick = enable;
     }
 
     /**
@@ -865,22 +928,21 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
      * To bind different types of holder and solve different the bind events
      *
      * @param holder
-     * @param positions
+     * @param position
      * @see #getDefItemViewType(int)
      */
     @Override
-    public void onBindViewHolder(K holder, int positions) {
-        super.onBindViewHolder(holder, positions);
+    public void onBindViewHolder(K holder, int position) {
+        super.onBindViewHolder(holder, position);
         //Add up fetch logic, almost like load more, but simpler.
-        autoUpFetch(positions);
+        autoUpFetch(position);
         //Do not move position, need to change before LoadMoreView binding
-        autoLoadMore(positions);
+        autoLoadMore(position);
         int viewType = holder.getItemViewType();
 
         switch (viewType) {
             case 0:
-
-                convert(holder, mData.get(holder.getLayoutPosition() - getHeaderLayoutCount()));
+                convert(holder, getItem(position - getHeaderLayoutCount()));
                 break;
             case LOADING_VIEW:
                 mLoadMoreView.convert(holder);
@@ -892,7 +954,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
             case FOOTER_VIEW:
                 break;
             default:
-                convert(holder, mData.get(holder.getLayoutPosition() - getHeaderLayoutCount()));
+                convert(holder, getItem(position - getHeaderLayoutCount()));
                 break;
         }
     }
@@ -909,7 +971,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getOnItemClickListener().onItemClick(BaseQuickAdapter.this, v, baseViewHolder.getLayoutPosition() - getHeaderLayoutCount());
+                    setOnItemClick(v, baseViewHolder.getLayoutPosition() - getHeaderLayoutCount());
                 }
             });
         }
@@ -917,10 +979,31 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    return getOnItemLongClickListener().onItemLongClick(BaseQuickAdapter.this, v, baseViewHolder.getLayoutPosition() - getHeaderLayoutCount());
+                    return setOnItemLongClick(v, baseViewHolder.getLayoutPosition() - getHeaderLayoutCount());
                 }
             });
         }
+    }
+
+    /**
+     * override this method if you want to override click event logic
+     *
+     * @param v
+     * @param position
+     */
+    public void setOnItemClick(View v, int position) {
+        getOnItemClickListener().onItemClick(BaseQuickAdapter.this, v, position);
+    }
+
+    /**
+     * override this method if you want to override longClick event logic
+     *
+     * @param v
+     * @param position
+     * @return
+     */
+    public boolean setOnItemLongClick(View v, int position) {
+        return getOnItemLongClickListener().onItemLongClick(BaseQuickAdapter.this, v, position);
     }
 
     private MultiTypeDelegate<T> mMultiTypeDelegate;
@@ -960,8 +1043,14 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
             z = getInstancedGenericKClass(temp);
             temp = temp.getSuperclass();
         }
-        K k = createGenericKInstance(z, view);
-        return null != k ? k : (K) new BaseViewHolder(view);
+        K k;
+        // 泛型擦除会导致z为null
+        if (z == null) {
+            k = (K) new BaseViewHolder(view);
+        } else {
+            k = createGenericKInstance(z, view);
+        }
+        return k != null ? k : (K) new BaseViewHolder(view);
     }
 
     /**
@@ -975,14 +1064,14 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
     private K createGenericKInstance(Class z, View view) {
         try {
             Constructor constructor;
-            String buffer = Modifier.toString(z.getModifiers());
-            String className = z.getName();
             // inner and unstatic class
-            if (className.contains("$") && !buffer.contains("static")) {
+            if (z.isMemberClass() && !Modifier.isStatic(z.getModifiers())) {
                 constructor = z.getDeclaredConstructor(getClass(), View.class);
+                constructor.setAccessible(true);
                 return (K) constructor.newInstance(this, view);
             } else {
                 constructor = z.getDeclaredConstructor(View.class);
+                constructor.setAccessible(true);
                 return (K) constructor.newInstance(view);
             }
         } catch (NoSuchMethodException e) {
@@ -1012,6 +1101,11 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
                     Class tempClass = (Class) temp;
                     if (BaseViewHolder.class.isAssignableFrom(tempClass)) {
                         return tempClass;
+                    }
+                } else if (temp instanceof ParameterizedType) {
+                    Type rawType = ((ParameterizedType) temp).getRawType();
+                    if (rawType instanceof Class && BaseViewHolder.class.isAssignableFrom((Class<?>) rawType)) {
+                        return (Class<?>) rawType;
                     }
                 }
             }
@@ -1268,9 +1362,11 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
 
     /**
      * bind recyclerView {@link #bindToRecyclerView(RecyclerView)} before use!
-     *
+     * Recommend you to use {@link #setEmptyView(layoutResId,viewGroup)}
      * @see #bindToRecyclerView(RecyclerView)
+     *
      */
+    @Deprecated
     public void setEmptyView(int layoutResId) {
         checkNotNull();
         setEmptyView(layoutResId, getRecyclerView());
@@ -1482,6 +1578,12 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
     public void openLoadAnimation() {
         this.mOpenAnimationEnable = true;
     }
+    /**
+     * To close the animation when loading
+     */
+    public void closeLoadAnimation() {
+        this.mOpenAnimationEnable = false;
+    }
 
     /**
      * {@link #addAnimation(RecyclerView.ViewHolder)}
@@ -1538,7 +1640,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
 
     @SuppressWarnings("unchecked")
     private int recursiveExpand(int position, @NonNull List list) {
-        int count = 0;
+        int count = list.size();
         int pos = position + list.size() - 1;
         for (int i = list.size() - 1; i >= 0; i--, pos--) {
             if (list.get(i) instanceof IExpandable) {
@@ -1573,7 +1675,8 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
             return 0;
         }
         if (!hasSubItems(expandable)) {
-            expandable.setExpanded(false);
+            expandable.setExpanded(true);
+            notifyItemChanged(position);
             return 0;
         }
         int subItemCount = 0;
@@ -1583,7 +1686,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
             subItemCount += recursiveExpand(position + 1, list);
 
             expandable.setExpanded(true);
-            subItemCount += list.size();
+//            subItemCount += list.size();
         }
         int parentPos = position + getHeaderLayoutCount();
         if (shouldNotify) {
@@ -1627,7 +1730,13 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
         }
 
         IExpandable expandable = getExpandableItem(position);
-        if (expandable == null || !hasSubItems(expandable)) {
+        if (expandable == null) {
+            return 0;
+        }
+
+        if (!hasSubItems(expandable)) {
+            expandable.setExpanded(true);
+            notifyItemChanged(position);
             return 0;
         }
 
@@ -1666,7 +1775,8 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
     }
 
     public void expandAll() {
-        for (int i = mData.size() - 1; i >= 0 + getHeaderLayoutCount(); i--) {
+
+        for (int i = mData.size() - 1 + getHeaderLayoutCount(); i >= getHeaderLayoutCount(); i--) {
             expandAll(i, false, false);
         }
     }
@@ -1681,6 +1791,8 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Drag
         int subItemCount = 0;
         if (expandable.isExpanded()) {
             List<T> subItems = expandable.getSubItems();
+            if (null == subItems) return 0;
+
             for (int i = subItems.size() - 1; i >= 0; i--) {
                 T subItem = subItems.get(i);
                 int pos = getItemPosition(subItem);
