@@ -3,8 +3,7 @@ apply plugin: 'kotlin-android'
 //apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 30
-    //buildToolsVersion "30.0.2"
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 14
@@ -21,13 +20,16 @@ android {
         }
     }
     compileOptions {
-        kotlinOptions.freeCompilerArgs += ['-module-name', "com.github.CymChad.brvah"]
+        kotlinOptions.freeCompilerArgs += ['-module-name', "com.github.CymChad.brvah", "-Xjvm-default=all"]
     }
 
     lintOptions {
         abortOnError false
     }
 
+    viewBinding {
+        enabled = true
+    }
     buildFeatures {
         dataBinding = true
     }
@@ -40,7 +42,7 @@ task sourcesJar(type: Jar) {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compileOnly 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.annotation:annotation:1.2.0'
+
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
 }

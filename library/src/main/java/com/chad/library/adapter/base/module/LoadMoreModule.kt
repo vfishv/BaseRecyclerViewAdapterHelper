@@ -20,7 +20,16 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder
 /**
  * 需要【向下加载更多】功能的，[BaseQuickAdapter]继承此接口
  */
-interface LoadMoreModule
+interface LoadMoreModule {
+    /**
+     * 重写此方法，返回自定义模块
+     * @param baseQuickAdapter BaseQuickAdapter<*, *>
+     * @return BaseLoadMoreModule
+     */
+    fun addLoadMoreModule(baseQuickAdapter: BaseQuickAdapter<*, *>): BaseLoadMoreModule {
+        return BaseLoadMoreModule(baseQuickAdapter)
+    }
+}
 
 object LoadMoreModuleConfig {
 
@@ -176,7 +185,7 @@ open class BaseLoadMoreModule(private val baseQuickAdapter: BaseQuickAdapter<*, 
      */
     private fun invokeLoadMoreListener() {
         loadMoreStatus = LoadMoreStatus.Loading
-        baseQuickAdapter.mRecyclerView?.let {
+        baseQuickAdapter.recyclerViewOrNull?.let {
             it.post { mLoadMoreListener?.onLoadMore() }
         } ?: mLoadMoreListener?.onLoadMore()
     }
@@ -194,7 +203,7 @@ open class BaseLoadMoreModule(private val baseQuickAdapter: BaseQuickAdapter<*, 
         }
         // 先把标记位设置为false
         mNextLoadEnable = false
-        val recyclerView = baseQuickAdapter.mRecyclerView ?: return
+        val recyclerView = baseQuickAdapter.recyclerViewOrNull ?: return
         val manager = recyclerView.layoutManager ?: return
         if (manager is LinearLayoutManager) {
             recyclerView.postDelayed({

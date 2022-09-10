@@ -1,5 +1,5 @@
 ![](https://user-images.githubusercontent.com/7698209/33198075-ef8f2230-d123-11e7-85a3-4cb9b22f877d.png)
-[![](https://jitpack.io/v/CymChad/BaseRecyclerViewAdapterHelper.svg)](https://jitpack.io/#CymChad/BaseRecyclerViewAdapterHelper)![](https://travis-ci.org/CymChad/BaseRecyclerViewAdapterHelper.svg?branch=master)[![API](https://img.shields.io/badge/API-14%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=14)[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-BaseRecyclerViewAdapterHelper-green.svg?style=true)](https://android-arsenal.com/details/1/3644)[![CircleCI](https://circleci.com/gh/CymChad/BaseRecyclerViewAdapterHelper/tree/master.svg?style=svg)](https://circleci.com/gh/CymChad/BaseRecyclerViewAdapterHelper/tree/master)[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2302d0084d0048eaa0f9bac4350837a0)](https://www.codacy.com/app/CymChad/BaseRecyclerViewAdapterHelper?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=CymChad/BaseRecyclerViewAdapterHelper&amp;utm_campaign=Badge_Grade)[![](https://img.shields.io/badge/%E4%BD%9C%E8%80%85-%E9%99%88%E5%AE%87%E6%98%8E-7AD6FD.svg)](https://www.zhihu.com/people/chen-yu-ming-98/activities)  
+[![](https://jitpack.io/v/CymChad/BaseRecyclerViewAdapterHelper.svg)](https://jitpack.io/#CymChad/BaseRecyclerViewAdapterHelper)![](https://travis-ci.org/CymChad/BaseRecyclerViewAdapterHelper.svg?branch=master)[![API](https://img.shields.io/badge/API-14%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=14)[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-BaseRecyclerViewAdapterHelper-green.svg?style=true)](https://android-arsenal.com/details/1/3644)[![CircleCI](https://circleci.com/gh/CymChad/BaseRecyclerViewAdapterHelper/tree/master.svg?style=svg)](https://circleci.com/gh/CymChad/BaseRecyclerViewAdapterHelper/tree/master)[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2302d0084d0048eaa0f9bac4350837a0)](https://www.codacy.com/app/CymChad/BaseRecyclerViewAdapterHelper?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=CymChad/BaseRecyclerViewAdapterHelper&amp;utm_campaign=Badge_Grade)[![](https://img.shields.io/badge/%E4%BD%9C%E8%80%85-%E9%99%88%E5%AE%87%E6%98%8E-7AD6FD.svg)](https://mp.weixin.qq.com/s/5UlMx9HDgEcvxJb4w5-gBA)  
 # BRVAH
 http://www.recyclerview.org/
 
@@ -10,13 +10,17 @@ Please feel free to use this. (Welcome to **Star** and **Fork**)
 
 
 ​    
-**New version 3.x release, Written using `kotlin` and `AndroidX`**, Support `java` use. Fixed many legacy issues, strengthened support for DataBinding, and ‘multi-layout’ is more flexible.
+新版4.x.x已发布 alpha 版本，完美兼容`ConcatAdapter`，解决了许多遗留问题，拆分了功能模块，BaseAdapter更加简洁干净。“多类型布局”更加灵活。向上、向下加载得到极大加强。
+v4版本已经上传 maven 中央仓库，不需要再引入三方仓库配置了。欢迎尝试。
+**注意，4.0为非兼容升级，建议在新项目尝试**
+```
+implementation "io.github.cymchad:BaseRecyclerViewAdapterHelper:4.0.0-beta02"
+```
 
-**新版3.x版已发布，使用`kotlin`和`AndroidX`编写**，支持`java`使用。解决了许多遗留问题，增强了对DataBinding的支持，并且“多重布局”更加灵活。
 
 Of course, you can continue to use the [2.x](https://github.com/CymChad/BaseRecyclerViewAdapterHelper/tree/2.x) version.
 
-当然，你也可以继续使用[2.x](https://github.com/CymChad/BaseRecyclerViewAdapterHelper/tree/2.x) 版本。
+当然，你也可以继续使用[2.x](https://github.com/CymChad/BaseRecyclerViewAdapterHelper/tree/2.x) 版本、[3.x.x](https://github.com/CymChad/BaseRecyclerViewAdapterHelper/blob/master/readme/0-BaseRecyclerViewAdapterHelper.md)版本。
 
 # Document
 - English Writing ...
@@ -24,10 +28,9 @@ Of course, you can continue to use the [2.x](https://github.com/CymChad/BaseRecy
 
 (由于各位项目成员工作较为繁忙，请各位同学谅解)
 
-## Demo
-![](https://github.com/CymChad/BaseRecyclerViewAdapterHelper/blob/master/readme/demo.png)
+## 4.x Demo
+[wiki](https://github.com/CymChad/BaseRecyclerViewAdapterHelper/wiki)
 
-[国内下载地址](https://www.lanzous.com/iaqt3ha)  
 
 # proguard-rules.pro
 > 此资源库自带混淆规则，并且会自动导入，正常情况下无需手动导入。
