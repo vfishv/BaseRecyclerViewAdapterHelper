@@ -7,14 +7,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.chad.baserecyclerviewadapterhelper.R
 import com.chad.baserecyclerviewadapterhelper.databinding.ItemHeaderAndFooterBinding
 import com.chad.baserecyclerviewadapterhelper.entity.Movie
-import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter4.BaseQuickAdapter
 
 /**
  * @author: limuyang
  * @date: 2019-12-06
  * @Description:
  */
-class UpFetchAdapter : BaseQuickAdapter<Movie?, UpFetchAdapter.VH>() {
+class UpFetchAdapter : BaseQuickAdapter<Movie, UpFetchAdapter.VH>() {
     class VH(
         parent: ViewGroup,
         val viewBinding: ItemHeaderAndFooterBinding = ItemHeaderAndFooterBinding.inflate(

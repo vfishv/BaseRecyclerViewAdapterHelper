@@ -6,10 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.chad.baserecyclerviewadapterhelper.R
-import com.chad.library.adapter.base.BaseSingleItemAdapter
-import com.chad.library.adapter.base.fullspan.FullSpanAdapterType
+import com.chad.library.adapter4.BaseSingleItemAdapter
+import com.chad.library.adapter4.fullspan.FullSpanAdapterType
 
-class HomeTopHeaderAdapter : BaseSingleItemAdapter<Any, HomeTopHeaderAdapter.VH>(), FullSpanAdapterType {
+class HomeTopHeaderAdapter : BaseSingleItemAdapter<Any, HomeTopHeaderAdapter.VH>(),
+    FullSpanAdapterType {
 
     companion object {
         val HEAD_VIEWTYPE = 0x10000556
@@ -24,7 +25,7 @@ class HomeTopHeaderAdapter : BaseSingleItemAdapter<Any, HomeTopHeaderAdapter.VH>
     override fun onBindViewHolder(holder: VH, item: Any?) {
     }
 
-    override fun getItemViewType(position: Int, list: List<Any?>): Int {
+    override fun getItemViewType(position: Int, list: List<Any>): Int {
         return HEAD_VIEWTYPE
     }
 
