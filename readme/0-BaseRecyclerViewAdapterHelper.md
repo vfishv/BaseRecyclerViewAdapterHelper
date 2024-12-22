@@ -17,17 +17,18 @@
 allprojects {
     repositories {
         ...
+        // 3.0.13 及以后版本不再需要
         maven { url 'https://jitpack.io' }
     }
 }
 ```
 
 ### 添加依赖项
-[![](https://jitpack.io/v/CymChad/BaseRecyclerViewAdapterHelper.svg)](https://jitpack.io/#CymChad/BaseRecyclerViewAdapterHelper)
+
 仅支持`AndroidX`
 ```
 dependencies {
-    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
+    implementation "io.github.cymchad:BaseRecyclerViewAdapterHelper:3.0.14"
 }
 ```
 
