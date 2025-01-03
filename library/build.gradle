@@ -3,11 +3,12 @@ apply plugin: 'kotlin-android'
 //apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 35
+    namespace "com.chad.library.adapter4"
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 28
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
     }
