@@ -14,7 +14,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.chad.library.R;
+import com.chad.library.adapter4.R;
 
 /**
  * @author Aidan Follestad (afollestad)
