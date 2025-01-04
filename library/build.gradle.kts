@@ -13,7 +13,7 @@ val versionName = "4.1.6"
 
 
 android {
-    compileSdk = 31
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 16
@@ -57,9 +57,9 @@ dependencies {
 
     implementation("androidx.recyclerview:recyclerview:1.3.2")
 
-    implementation("androidx.databinding:databinding-runtime:8.0.0")
+    implementation("androidx.databinding:databinding-runtime:8.7.3")
 }
-
+/*
 //---------- maven upload info -----------------------------------
 
 var signingKeyId = ""//签名的密钥后8位
@@ -158,3 +158,4 @@ signing {
     sign(publishing.publications)
 }
 
+*/
