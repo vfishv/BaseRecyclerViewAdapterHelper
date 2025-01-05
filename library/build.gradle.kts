@@ -53,9 +53,12 @@ android {
 
 
 dependencies {
-    implementation("androidx.annotation:annotation:1.8.0")
+    implementation("androidx.annotation:annotation:1.6.0")
 
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+
+    // https://github.com/timusus/RecyclerView-FastScroll
+    //implementation("com.simplecityapps:recyclerview-fastscroll:2.0.1")
 
     implementation("androidx.databinding:databinding-runtime:8.7.3")
 }
