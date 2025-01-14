@@ -13,10 +13,10 @@ val versionName = "3.0.14"
 
 
 android {
-    compileSdk = 31
+    compileSdk = 35
 
     defaultConfig {
-        minSdk = 14
+        minSdk = 16
 
         consumerProguardFiles("proguard-rules.pro")
     }
@@ -55,11 +55,11 @@ android {
 
 
 dependencies {
-    implementation("androidx.annotation:annotation:1.5.0")
+    implementation("androidx.annotation:annotation:1.6.0")
 
-    implementation("androidx.recyclerview:recyclerview:1.2.1")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
 
-    implementation("androidx.databinding:databinding-runtime:8.0.0")
+    implementation("androidx.databinding:databinding-runtime:8.2.2")
 }
 
 
